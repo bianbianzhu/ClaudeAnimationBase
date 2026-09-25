@@ -383,7 +383,7 @@ clawd(x, y, u, emotions(t, [[0, 'sleepy'], [1.9, 'surprised', { lookX: .8 }], [2
   - `lookX`/`lookY` aim the pupils, and `squint` closes the eyes from any shape.
 - **Mouths:** o, O, smile, grin, flat, wobble, cat, frown, smirk, laugh, open, wail, teeth, tongue, pout, yawn. Use `null` for none (Clawd's resting face).
 - **Lunchbox lid:** `lid` 0..1 hinges the top of the body open, with teeth pointing into the mouth. It's for fury, chomping and shouting, in the front view only.
-- **Hats:** party, hard, crown, halo, wizard, hood, top, fedora, band, sweatband, beanie, bow, flower, headphones, cat (ears and whiskers). Face pieces: masq, mask, bowtie.
+- **Hats:** party, hard, crown, halo, wizard, hood, top, fedora, band, sweatband, beanie, bow, flower, headphones, straw (sun hat), goggles (swim goggles on the forehead), cat (ears and whiskers). Face pieces: masq, mask, bowtie.
 - **Emotes** are painted marks that pop in by the head: `!` `?` `!!` `!?` zzz, sweat, spark, heart, hearts, anger, steam, bulb, dots, scribble, music, swirl, stars, cloud.
   - `emoteK` is the 0..1 pop and `emoteAge` drives the looping ones; `emotions()` sets both.
   - `emote(kind, x, y, s, k, age)` draws one anywhere, for example over a prop.

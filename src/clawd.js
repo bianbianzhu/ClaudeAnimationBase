@@ -358,7 +358,7 @@ function mouth(u, m, sw) {
 }
 
 // ---------- hats ----------
-// party, hard, crown, halo, wizard, hood, top, fedora, band, sweatband, beanie, bow, flower, headphones, cat (ears; the
+// party, hard, crown, halo, wizard, hood, top, fedora, band, sweatband, beanie, bow, flower, headphones, straw, goggles, cat (ears; the
 // whiskers show in the front and 3/4 views), plus face pieces for the front and 3/4 views: masq, mask, bowtie
 function hat(u, h, sw) {
   if (!h || h === 'mask' || h === 'masq' || h === 'bowtie') return;
@@ -406,6 +406,20 @@ function hat(u, h, sw) {
   } else if (h === 'headphones') {
     inkLine(P([[-5.1, -5.8], [-4.6, -9.4], [0, -10.6], [4.6, -9.4], [5.1, -5.8]]), sw * 2.4, PAL.ink, 'ink', .6);
     for (const s of [-1, 1]) paint(rrPts((s < 0 ? -6.1 : 4.6) * u, -7.4 * u, 1.5 * u, 2.8 * u, .6 * u), { wash: PAL.violet, fill: PAL.rose, fillOp: 50, ink: PAL.ink, sw: sw * .7 });
+  } else if (h === 'straw') {   // a wide-brimmed straw sun hat with a ribbon
+    const d = []; for (let i = 0; i <= 12; i++) { const a = Math.PI + i / 12 * Math.PI; d.push([Math.cos(a) * 3.3 * u, -8.3 * u + Math.sin(a) * 2.5 * u]); }
+    paint(d, { wash: '#EBCB7E', fill: '#C9A04E', fillOp: 70, tex: .7, ink: PAL.ink, sw: sw * .8 });
+    paint(rectPts(-3.3 * u, -9.1 * u, 6.6 * u, .8 * u), { wash: PAL.teal, ink: null });
+    paint(ellPts(0, -8.2 * u, 6.8 * u, .75 * u, 24, 0, 0), { wash: '#EBCB7E', fill: '#C9A04E', fillOp: 60, tex: .7, ink: PAL.ink, sw: sw * .8 });
+  } else if (h === 'goggles') {   // swim goggles pushed up on the forehead
+    inkLine(P([[-5.1, -7.65], [-3.6, -7.75]]), sw * 1.6, '#3F8FB8', 'ink', 0);
+    inkLine(P([[3.6, -7.75], [5.1, -7.65]]), sw * 1.6, '#3F8FB8', 'ink', 0);
+    inkLine(P([[-1.3, -7.75], [1.3, -7.75]]), sw * 1.2, '#3F8FB8', 'ink', 0);
+    for (const s of [-1, 1]) {
+      paint(ellPts(s * 2.5 * u, -7.75 * u, 1.3 * u, .82 * u, 16), { wash: '#3F8FB8', ink: PAL.ink, sw: sw * .7 });
+      paint(ellPts(s * 2.5 * u, -7.75 * u, .95 * u, .55 * u, 14), { wash: '#A9E0EC', ink: null });
+      inkLine(P([[s * 2.5 - .45, -7.95], [s * 2.5 - .05, -8.15]]), sw * .4, PAL.cream, 'inkfine', 0);
+    }
   } else if (h === 'cat') {
     for (const s of [-1, 1]) {
       paint([[s * 4.9 * u, -7.9 * u], [s * 4.3 * u, -11 * u], [s * 1.9 * u, -7.9 * u]], { wash: PAL.clay, ink: PAL.ink, sw: sw * .8 });
