@@ -8,8 +8,8 @@ repository itself; each piece is installed once per machine.
 | Node.js 24 (24.14 verified) | running `render.mjs` | globally (nvm, or Homebrew's `node@24`) | `package.json` `engines`: ≥ 22.12 (puppeteer-core 25 requires it); `.nvmrc` says 24 |
 | p5, p5.brush, puppeteer-core | drawing and driving the headless browser | `node_modules/` in this repo (ignored by git) | **pinned** by `package-lock.json`: install with `npm ci` |
 | Google Chrome (153 here) | the renderer's browser (WebGL) | globally (the Chrome app; `--chrome=` for another one) | not pinned: Chrome auto-updates; new versions can move a few pixels, not the picture |
-| ffmpeg | encoding MP4s and muxing audio (any build); burning subtitles (a build with libass) | globally: `brew install ffmpeg` for rendering; `brew install ffmpeg-full` for subtitles | not pinned: `brew upgrade` moves it |
-| libass | ffmpeg's subtitle renderer (only for burning subtitles in) | comes with Homebrew's `ffmpeg-full` (keg-only: not on the PATH, see below). Homebrew's plain `ffmpeg` no longer includes it (from 9.0). | check with `ffmpeg -filters \| grep " ass "` |
+| ffmpeg | encoding MP4s and muxing audio (any build); burning subtitles (a build with libass) | globally: `brew install ffmpeg`; for subtitles, `ffmpeg-full` only if that one lacks libass | not pinned: `brew upgrade` moves it |
+| libass | ffmpeg's subtitle renderer (only for burning subtitles in) | inside ffmpeg: Homebrew's plain `ffmpeg` 8.x has it, 9.x doesn't; `ffmpeg-full` has it (keg-only, see below) | check with `ffmpeg -filters \| grep " ass "` |
 | Python 3.13 (3.13.2 verified) | the tools in `tools/` | globally (pyenv, python.org or Homebrew's `python@3.13`) | 3.12 is the minimum (the pinned numpy, scipy and librosa require it); create the venv with `python3.13` explicitly |
 | librosa, numpy, scipy, soundfile, faster-whisper, pillow | beat maps, pitch, lyric timing, frame diffs | a virtual environment **outside** the repo, e.g. `~/.venvs/audio` | **pinned** in `tools/requirements.txt` |
 | whisper model `large-v3` (~3 GB) | lyric timing | `~/.cache/huggingface` (downloaded on first run of `lyrics.py`) | fixed by name; cached, so it downloads once |
@@ -32,14 +32,13 @@ python3.13 -m venv ~/.venvs/audio   # name the version: plain python3 may be an 
 ~/.venvs/audio/bin/pip install --progress-bar off --timeout 60 -r tools/requirements.txt
 #   where public PyPI is blocked, add: --index-url https://packagefeedproxy.microsoft.io/pypi/simple/
 
-# burning subtitles in (optional): an ffmpeg with libass
-brew install ffmpeg-full
+# burning subtitles in (optional): needs an ffmpeg with libass; install ffmpeg-full only if yours lacks it
+ffmpeg -hide_banner -filters | grep -q " ass " || brew install ffmpeg-full
 ```
 
-`ffmpeg-full` is keg-only, so it isn't on the PATH and doesn't replace the plain `ffmpeg`. Use it by its full path for
-the subtitle step, e.g. `FF=$(brew --prefix ffmpeg-full)/bin/ffmpeg` and then `$FF -i ... -vf ass=...`, or put its
-`bin` first on the PATH. Watch out on a machine whose plain `ffmpeg` has libass today (8.x built it in): `brew upgrade`
-to 9.x removes it.
+Burn subtitles with whichever ffmpeg has libass: `FF=$(ffmpeg -hide_banner -filters | grep -q " ass " && echo ffmpeg || echo "$(brew --prefix ffmpeg-full)/bin/ffmpeg")`.
+Homebrew's ffmpeg 8.x includes libass and 9.x doesn't, so `brew upgrade` can remove it (`brew pin ffmpeg` keeps 8.x);
+`ffmpeg-full` is keg-only, hence the full path.
 
 Install the Python packages in one command without `-q`, so the download progress shows: the big wheels
 (ctranslate2, onnxruntime, numba) take minutes and a quiet install looks hung.
@@ -48,7 +47,7 @@ Install the Python packages in one command without `-q`, so the download progres
 
 ```bash
 node render.mjs --sheet=1,3,5 --out=out/check/setup.jpg            # renders three frames
-$(brew --prefix ffmpeg-full)/bin/ffmpeg -hide_banner -filters | grep -E " (ass|subtitles) "   # libass is there
+$FF -hide_banner -filters | grep -E " (ass|subtitles) "   # both lines: subtitles can be burned in
 ~/.venvs/audio/bin/python --version                              # 3.13.x
 ~/.venvs/audio/bin/python -c "import librosa, faster_whisper, PIL; print('ok')"
 node --version                                                   # v24.x
