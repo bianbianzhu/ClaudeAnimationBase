@@ -20,7 +20,7 @@ Read [ANIMATION_GUIDE.md](../ANIMATION_GUIDE.md) first, especially "Music (optio
 
 ## Setup
 
-The tools are Python: [tools/audio/beats.py](../tools/audio/beats.py) (librosa) and [tools/audio/lyrics.py](../tools/audio/lyrics.py) (faster-whisper). Both also need `ffmpeg` on the PATH.
+The tools are Python: [tools/audio/beats.py](../tools/audio/beats.py) (librosa) and [tools/audio/lyrics.py](../tools/audio/lyrics.py) (faster-whisper). Both also need `ffmpeg` on the PATH. Their versions are pinned in [tools/requirements.txt](../tools/requirements.txt); [SETUP.md](SETUP.md) lists every dependency of the kit.
 
 Use a virtualenv of your choice, **outside the repo**:
 
@@ -28,14 +28,13 @@ Use a virtualenv of your choice, **outside the repo**:
 python3 -m venv ~/.venvs/audio
 ```
 
-The organization blocks public PyPI, so install from the proxy index. Install the two packages **as separate commands and without `-q`**:
+Install the pinned packages (librosa, faster-whisper, and pillow for `tools/frames_diff.py`) **without `-q`**. Where public PyPI is blocked, use the proxy index:
 
 ```bash
-~/.venvs/audio/bin/pip install --index-url https://packagefeedproxy.microsoft.io/pypi/simple/ --progress-bar off --timeout 60 librosa
-~/.venvs/audio/bin/pip install --index-url https://packagefeedproxy.microsoft.io/pypi/simple/ --progress-bar off --timeout 60 faster-whisper
+~/.venvs/audio/bin/pip install --index-url https://packagefeedproxy.microsoft.io/pypi/simple/ --progress-bar off --timeout 60 -r tools/requirements.txt
 ```
 
-- The wheels are large (ctranslate2, onnxruntime, av, numba/llvmlite). One combined quiet install printed nothing for 7+ minutes and looked hung. Separate, verbose installs show progress.
+- The wheels are large (ctranslate2, onnxruntime, av, numba/llvmlite). A quiet (`-q`) install prints nothing for many minutes and looks hung; without `-q` you see each download.
 - macOS has no `timeout` command. Don't wrap installs in it.
 - Versions that worked: Python 3.13, librosa 1.0.0, faster-whisper 1.2.1, ctranslate2 4.8.2, numpy 2.5.
 - The first `lyrics.py` run downloads the whisper `large-v3` model (~3 GB) from Hugging Face into `~/.cache/huggingface/hub`. After that it's offline.

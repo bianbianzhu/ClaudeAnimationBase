@@ -1,0 +1,11 @@
+# Python packages for tools/ (audio analysis, lyric timing, frame diffs). The versions these tools were built and
+# verified with; install into a venv outside the repo (docs/SETUP.md):
+#   python3 -m venv ~/.venvs/audio
+#   ~/.venvs/audio/bin/pip install --progress-bar off --timeout 60 -r tools/requirements.txt
+# (add --index-url https://packagefeedproxy.microsoft.io/pypi/simple/ where public PyPI is blocked)
+librosa==1.0.0          # tools/audio/beats.py, pitch.py: tempo, beats, onsets, pitch
+numpy==2.5.3
+scipy==1.18.1
+soundfile==0.14.0
+faster-whisper==1.2.1   # tools/audio/lyrics.py: word timings (downloads the large-v3 model, ~3 GB, on first run)
+pillow==12.3.0          # tools/frames_diff.py: reading and comparing frames
