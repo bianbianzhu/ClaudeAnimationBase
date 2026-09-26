@@ -24,7 +24,7 @@ function cover(t, k, o = {}) {
     else {
       const p = e(k.fig), u = 25 * p; boilSeed('cover-fig');
       silhouette(JZ.ink, () => { if (p > .1) ribbonMic(890 + 7.2 * u, COVER.bandY, 5.3 * u, { s: u / 26, tilt: -.35, lean: -.1 }); });
-      clawd(890, COVER.bandY, u, { eyes: 'closed', hat: ['gardenia', 'bowtie'], view: 'q', aR: .45, sil: JZ.ink, boilKey: 'coverfig' });
+      clawd(890, COVER.bandY, u, { eyes: 'closed', hat: singerHat(), view: 'q', aR: .45, sil: JZ.ink, boilKey: 'coverfig' });
     }
   }
 }

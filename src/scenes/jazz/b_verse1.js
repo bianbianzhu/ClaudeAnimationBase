@@ -733,7 +733,7 @@
     const sag = ease(seg(tt, EX.walk + .5, EX.gone));
     const umb = ph === 3 ? 1 : ph === 4 ? 1 - .6 * ease(seg(tt, EX.walk + .4, EX.gone)) : 0;
     legs(BN.sx, BN.seat + 12, JZ.ink, ph === 4 ? 0 : Math.sin(tt * 2.6 + 1), 'S');
-    clawd(BN.sx + sLean * u - answer * .6 * u, sit(BN.seat), u, { view: 'q', flip: true, noLegs: true, hat: ['gardenia', 'bowtie'], rot: .08 * sLean - .05 * sSway - .12 * answer + .1 * sag, sq: .08 * sag + .06 * hitK(tt - (EX.walk + .1), 5) * (ph === 4 ? 1 : 0), aL: umb > 0 ? .9 : -.6, aR: ph === 4 ? -.6 + 1.1 * ease(seg(tt, EX.walk + .1, EX.walk + .4)) * (1 - sag) : -.6, sil: JZ.ink, boilKey: 'M-singer' });
+    clawd(BN.sx + sLean * u - answer * .6 * u, sit(BN.seat), u, { view: 'q', flip: true, noLegs: true, hat: singerHat(), rot: .08 * sLean - .05 * sSway - .12 * answer + .1 * sag, sq: .08 * sag + .06 * hitK(tt - (EX.walk + .1), 5) * (ph === 4 ? 1 : 0), aL: umb > 0 ? .9 : -.6, aR: ph === 4 ? -.6 + 1.1 * ease(seg(tt, EX.walk + .1, EX.walk + .4)) * (1 - sag) : -.6, sil: JZ.ink, boilKey: 'M-singer' });
     if (umb > 0) umbrella(BN.sx - 3.1 * u - answer * .6 * u, BN.seat - 4.6 * u, ph === 4 ? .45 * (1 - umb) + .05 : .12, 1.22);
     // a heart between them (mustard)
     if (ph === 1) { const hk = seg(tt, 67.75, 68.05) * (1 - seg(tt, 69.2, 69.5)); emote('heart', (BN.lx + BN.sx) / 2 + 20, BN.seat - 9 * u - 30 * Math.sin(tt * 2), 44, hk, tt - 67.75); }

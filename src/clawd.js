@@ -116,7 +116,8 @@ function clawd(x, y, u, o = {}) {
         sx = Math.sin(ph) * .55; h = 2.2 - Math.max(0, Math.cos(ph)) * .8;
       } else { const ph = Math.sin((o.walk + (i % 2 ? .5 : 0)) * TAU); if (ph > 0) h = 2.2 - ph * .9; }
     }
-    paint(rectPts((lx + sx) * u, -2.4 * u, u, h * u, J * .6), { wash: isFar ? far : dk, washOp: 255, ink: PAL.ink, sw: sw * .8 });
+    const trousers = hats.includes('tux');
+    paint(rectPts((lx + sx) * u, -2.4 * u, u, h * u, J * .6), { wash: trousers ? (isFar ? TUX_FAR : TUX) : isFar ? far : dk, washOp: 255, ink: PAL.ink, sw: sw * .8 });
   });
 
   rs('body');
@@ -133,6 +134,7 @@ function clawd(x, y, u, o = {}) {
       inkLine([[V.seam * u + jit(J), -7.9 * u], [V.seam * u + jit(J), -5 * u], [V.seam * u + jit(J), -2.1 * u]], sw * .55, PAL.ink, 'inkfine', 0);
     }
     paint(body, { ink: PAL.ink, sw });
+    if (hats.includes('tux')) tuxJacket(u, sw, V, J);
     if (o.gloom > .02) gloom(u, sw, V, o.gloom);
     if (V.face && !o.noFace) {
       const F = V.face;
@@ -197,6 +199,19 @@ function smearTrail(x, y, u, V, k, dir, col) {
     inkLine([[x0, yy], [x0 + s * len * .5, yy + jit(u * .1)], [x0 + s * len, yy]], 2.2 * k, col, 'dry', .3);
     if (i % 2) inkLine([[x0 + s * len * .3, yy + .5 * u], [x0 + s * len * 1.1, yy + .5 * u]], .6, PAL.ink, 'inkfine', 0);
   }
+}
+
+// A dinner jacket (the 'tux' costume piece): an ink jacket over the lower body with a cream shirt front under the bow
+// tie (in the views that show the face), and ink trousers on the legs (see the legs above). It follows every view.
+const TUX = '#2B2531', TUX_FAR = '#221E27';
+function tuxJacket(u, sw, V, J) {
+  const L = V.L * u, R = V.R * u, top = -3.75 * u;
+  paint(rectPts(L, top, R - L, 1.75 * u, J * .5), { wash: TUX, ink: PAL.ink, sw });
+  if (V.strip) paint(rectPts(V.strip[0] * u, top, (V.strip[1] - V.strip[0]) * u, 1.75 * u, J * .4), { wash: TUX_FAR, ink: null });
+  if (!V.face) return;
+  const cx = V.face.cx * u, w = 1.2 * u * V.face.fw;
+  paint([[cx - w, top], [cx + w, top], [cx, -2.05 * u]], { wash: PAL.cream, ink: PAL.ink, sw: sw * .6 });
+  for (const s of [-1, 1]) inkLine([[cx + s * w, top], [cx + s * .3 * w, -2.35 * u]], sw * .5, '#4A4252', 'inkfine', 0);
 }
 
 // Gloom: a dark wash over the forehead with hanging gloom lines (despair, dread, a guilty conscience).
@@ -377,14 +392,22 @@ function silhouette(col, fn, ink = col) {
 }
 
 // ---------- hats ----------
-// party, hard, crown, halo, wizard, hood, top, fedora, porkpie, beret, cap (newsboy), band, sweatband, beanie, bow,
+// party, hard, crown, halo, wizard, hood, top, tophat (tilted, vermilion band), fedora, porkpie, beret, cap (newsboy), band, sweatband, beanie, bow,
 // flower, gardenia (a big flower by the left eye), headphones, straw, goggles, cat (ears; the whiskers show in the front
-// and 3/4 views), plus face pieces for the front and 3/4 views: masq, mask, bowtie, specs (round spectacles)
+// and 3/4 views), plus face pieces for the front and 3/4 views: masq, mask, bowtie, specs (round spectacles), and one
+// body piece for every view: tux (a dinner jacket and trousers)
 const FACE_HATS = ['cat', 'masq', 'bowtie', 'specs'];
 function hat(u, h, sw) {
-  if (!h || h === 'mask' || h === 'masq' || h === 'bowtie' || h === 'specs') return;
+  if (!h || h === 'mask' || h === 'masq' || h === 'bowtie' || h === 'specs' || h === 'tux') return;
   const P = pts => pts.map(([a, b]) => [a * u, b * u]);
-  if (h === 'porkpie') {   // a jazzman's pork-pie: low flat crown with a dented top, a mustard band, a short brim
+  if (h === 'tophat') {   // a showman's top hat: ink crown with an outline, a vermilion band, a rim of light on its edge
+    push(); translate(.3 * u, 0); rotate(.06);
+    paint(P([[-2.5, -8.5], [-2.3, -13.2], [2.3, -13.2], [2.5, -8.5]]), { wash: '#2B2531', ink: PAL.ink, sw: sw * .8 });
+    paint(rectPts(-2.45 * u, -9.7 * u, 4.9 * u, .85 * u), { wash: '#D6452B', ink: null });
+    inkLine(P([[-2.0, -12.8], [-2.15, -10.0]]), sw * .6, '#6E6478', 'inkfine', 0);
+    paint(ellPts(0, -8.45 * u, 3.9 * u, .55 * u, 22), { wash: '#2B2531', ink: PAL.ink, sw: sw * .8 });
+    pop();
+  } else if (h === 'porkpie') {   // a jazzman's pork-pie: low flat crown with a dented top, a mustard band, a short brim
     paint(P([[-2.9, -8.3], [-2.65, -10.2], [-1.4, -10.2], [0, -9.95], [1.4, -10.2], [2.65, -10.2], [2.9, -8.3]]), { wash: '#2C2733', ink: PAL.ink, sw: sw * .8 });
     paint(rectPts(-2.85 * u, -9.25 * u, 5.7 * u, .75 * u), { wash: '#E2A62A', ink: null });
     paint(ellPts(0, -8.25 * u, 4.1 * u, .55 * u, 22), { wash: '#2C2733', ink: PAL.ink, sw: sw * .8 });

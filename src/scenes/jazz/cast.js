@@ -2,13 +2,21 @@
 // returns world points (bell, mouth, hands) for the sound shapes to come from.
 //   o: the usual clawd() options (emotion spreads, sil, view, flip, boilKey...) plus per-player ones below.
 
-// the singer: front / q view at the ribbon mic, gardenia + bow tie; the mouth follows the sung words
+// The singer's look, defined once. Every shot that draws the singer (singer(), and the few that call clawd() for it
+// directly) takes its hats from singerHat(), so a costume change here changes it everywhere, and nothing else.
+// A top hat and a dinner jacket tell the singer from the one who left (who wears the matching gardenia) at any size and in
+// silhouette; the gardenia and bow tie stay.
+const SINGER_LOOK = { hat: ['tophat', 'tux', 'gardenia', 'bowtie'] };
+// its hats; noGardenia leaves the flower off (the outro takes it off and lays it on the table)
+const singerHat = (o = {}) => SINGER_LOOK.hat.filter(h => !(o.noGardenia && h === 'gardenia'));
+
+// the singer: front / q view at the ribbon mic, in SINGER_LOOK; the mouth follows the sung words
 function singer(x, y, u, t, o = {}) {
   const view = o.view || 'q', f = o.flip ? -1 : 1, V = VIEWS[view];
   const mouthX = V.face ? (V.face.cx + V.face.mx * V.face.fw) : 0;
   const mo = o.sing === false ? (o.mouth ?? null) : (singMouth(t) ?? o.mouth ?? null);
   const hold = o.mic !== false && view !== 'front';
-  clawd(x, y, u, { eyes: 'closed', hat: ['gardenia', 'bowtie'], ...o, view, mouth: mo, ...(hold ? { aR: o.aR ?? .45 } : {}) });
+  clawd(x, y, u, { eyes: 'closed', hat: singerHat(), ...o, view, mouth: mo, ...(hold ? { aR: o.aR ?? .45 } : {}) });
   let mic = null;
   if (o.mic !== false) {
     const mx = x + f * (view === 'front' ? 0 : 7.2) * u, my = y + (o.micDy ?? 0);

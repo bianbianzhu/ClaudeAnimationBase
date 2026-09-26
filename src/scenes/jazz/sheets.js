@@ -68,6 +68,28 @@
   };
   LOOPS.jazzbig.len = 4;
 
+  // Candidate looks for the singer next to the lover, at wide-shot size, in colour and as silhouettes, to judge
+  // which extra piece tells them apart at a glance.
+  LOOPS.singerlooks = t => {
+    ground(JZ.blueDk);
+    block(rectPts(0, 470, W, 70), JZ.ink2, { ink: null }); block(rectPts(0, 980, W, 100), JZ.ink2, { ink: null });
+    const tux = (u, sw) => {   // a dinner jacket: ink lower body, a cream shirt front in a V under the bow tie
+      paint([[-5 * u, -4.6 * u], [-1.1 * u, -4.6 * u], [0, -2.1 * u], [1.1 * u, -4.6 * u], [5 * u, -4.6 * u], [5 * u, -2 * u], [-5 * u, -2 * u]], { wash: JZ.ink2, ink: PAL.ink, sw });
+      paint([[-1.1 * u, -4.6 * u], [1.1 * u, -4.6 * u], [0, -2.2 * u]], { wash: JZ.cream, ink: PAL.ink, sw: sw * .6 });
+      for (const s of [-1, 1]) paint([[0, -3.2 * u], [s * 1.5 * u, -3.9 * u], [s * 1.5 * u, -2.5 * u]], { wash: PAL.rose, ink: PAL.ink, sw: sw * .5 });
+    };
+    const looks = [['before (gardenia + bow tie)', {}], ['top hat', { hat: ['top', 'gardenia', 'bowtie'] }], ['fedora', { hat: ['fedora', 'gardenia', 'bowtie'] }], ['dinner jacket', { draw: tux }], ['top hat + jacket', { hat: ['top', 'gardenia', 'bowtie'], draw: tux }]];
+    looks.forEach(([name, lk], i) => {
+      const x = 190 + i * 385;
+      clawd(x - 60, 470, 14, { ...feel('neutral', t, { seed: i }), hat: ['gardenia', 'bowtie'], view: 'q', ...lk, boilKey: 'L' + i });
+      lover(x + 90, 470, 14, { view: 'q', flip: true, boilKey: 'V' + i });
+      clawd(x - 60, 980, 14, { hat: ['gardenia', 'bowtie'], view: 'q', ...lk, sil: JZ.ink, boilKey: 'S' + i });
+      lover(x + 90, 980, 14, { view: 'q', flip: true, boilKey: 'W' + i });
+      letter(name, x, 560, 26, JZ.cream, { ink: false });
+    });
+  };
+  LOOPS.singerlooks.len = 2;
+
   LOOPS.jazzshapes = t => {
     plate('shapes');
     ground(JZ.cream);

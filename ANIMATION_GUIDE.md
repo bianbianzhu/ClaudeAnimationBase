@@ -197,6 +197,13 @@ Open each image and actually look at it. Check:
 - **Rules:** is there any text? Is there any 3D? Is there any dead stretch where nothing is happening?
 - **Colour:** any muddy glows (use `glow()`), pure black or pure white?
 
+**Changing one thing late** (a costume, a prop) without disturbing the rest: define it in one place (e.g. the jazz
+video's `SINGER_LOOK` in cast.js) so every shot takes it from there; render the video before and after into two
+folders (`node render.mjs --frames --dir=out/frames_b`), then run `python tools/frames_diff.py out/frames out/frames_b
+--sheet out/check/diff.jpg`. Renders repeat to within GPU rounding, so it lists exactly the frames that changed and
+boxes the changed pixels. Every box should sit on the thing you changed; `--expect-same` proves a refactor changed
+nothing.
+
 Fix what you find, then look again. **Budget:** at least one sheet per shot, a strip for every key motion and transition, and a crop for every face that carries the story. Contact sheets run about 0.1–1 s per frame, so this is cheap: don't skip it.
 
 ### 4. Render
@@ -387,7 +394,7 @@ clawd(x, y, u, emotions(t, [[0, 'sleepy'], [1.9, 'surprised', { lookX: .8 }], [2
   - `lookX`/`lookY` aim the pupils, and `squint` closes the eyes from any shape.
 - **Mouths:** o, O, smile, grin, flat, wobble, cat, frown, smirk, laugh, open, wail, teeth, tongue, pout, yawn. Use `null` for none (Clawd's resting face).
 - **Lunchbox lid:** `lid` 0..1 hinges the top of the body open, with teeth pointing into the mouth. It's for fury, chomping and shouting, in the front view only.
-- **Hats:** party, hard, crown, halo, wizard, hood, top, fedora, porkpie, beret, cap (a flat newsboy cap, peak forward), band, sweatband, beanie, bow, flower, gardenia (a big flower by the left eye), headphones, straw (sun hat), goggles (swim goggles on the forehead), cat (ears and whiskers). Face pieces: masq, mask, bowtie, specs (round spectacles).
+- **Hats:** party, hard, crown, halo, wizard, hood, top, tophat (tilted, with a vermilion band), fedora, porkpie, beret, cap (a flat newsboy cap, peak forward), band, sweatband, beanie, bow, flower, gardenia (a big flower by the left eye), headphones, straw (sun hat), goggles (swim goggles on the forehead), cat (ears and whiskers). Face pieces: masq, mask, bowtie, specs (round spectacles). Body piece: tux (a dinner jacket with a shirt front, and trousers), in every view.
 - **Emotes** are painted marks that pop in by the head: `!` `?` `!!` `!?` zzz, sweat, spark, heart, hearts, anger, steam, bulb, dots, scribble, music, swirl, stars, cloud.
   - `emoteK` is the 0..1 pop and `emoteAge` drives the looping ones; `emotions()` sets both.
   - `emote(kind, x, y, s, k, age)` draws one anywhere, for example over a prop.

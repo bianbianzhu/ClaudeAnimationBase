@@ -79,7 +79,9 @@ shards knock tiles out of their grid.
 All band members are the clay Clawd; hats, props and instruments tell them apart, so their silhouettes read at a
 glance. Every instrument is drawn in flat 2D, in key views like Clawd (front, 3/4, side). No 3D.
 
-- **The singer** (lead): a cream gardenia by the left eye (the `flower` hat, larger), a vermilion bow tie. Stands at
+- **The singer** (lead): a tilted top hat with a vermilion band, a dinner jacket (ink jacket and trousers, a cream shirt
+  front), a cream gardenia by the left eye and a rose bow tie (`SINGER_LOOK` in cast.js). The hat and jacket were added
+  after viewers mixed the singer up with the one who left (who wears the matching gardenia) in wide shots. Stands at
   a tall vintage ribbon microphone (a chrome capsule on a thin stand with a round base). Its mouth opens on the sung
   words (lyric word timings), eyes mostly closed or sad. Arms: one on the mic stand, one free and acting.
 - **The saxophonist**: a pork-pie hat (flat low crown, short brim, mustard band) and sunglasses. A tenor sax held

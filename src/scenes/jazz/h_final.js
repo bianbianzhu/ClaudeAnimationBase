@@ -541,7 +541,7 @@
     let fl;
     if (dk > .02) { fl = dim(() => candle(gx + 52 * s, top, 1.15 * s, o.tf ?? t, { key: 'tg', flame: 0 })); candleFlame(fl[0], fl[1], 1.15 * s, o.tf ?? t, { flame: o.flameK ?? 1, light: o.light ?? 1, lean: o.flameLean || 0 }); }
     else fl = candle(gx + 52 * s, top, 1.15 * s, o.tf ?? t, { key: 'tg', flame: o.flameK ?? 1, light: o.light ?? 1 });
-    const hats = dk > .4 ? [] : held || laid ? ['bowtie'] : ['gardenia', 'bowtie'];
+    const hats = dk > .4 ? [] : singerHat({ noGardenia: held || laid });
     const m = o.mood || feel('sad', t);
     const sg = singer(sx, sy, u, t, {
       ...m, view: 'front', flip: true, mic: false, hat: hats, aL: a, aR: m.aR ?? -.6, noShadow: true,
