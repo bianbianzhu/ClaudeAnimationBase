@@ -23,26 +23,26 @@
 </main>
 <!-- engine -->
 <script src="src/config.js"></script>
+<script src="src/scenes/jazz/beatmap.js"></script>
 <script src="src/core.js"></script>
 <script src="src/clawd.js"></script>
 <script src="src/timeline.js"></script>
 <!-- reference sheets (standalone loops) -->
 <script src="src/sheets.js"></script>
 <!-- your video: add a script per scene file, in order -->
-<script src="src/scenes/echoes/common.js"></script>
-<script src="src/scenes/echoes/a_line.js"></script>
-<script src="src/scenes/echoes/b_city.js"></script>
-<script src="src/scenes/echoes/c_glass.js"></script>
-<script src="src/scenes/echoes/e_puddles.js"></script>
-<script src="src/scenes/echoes/f_mirror.js"></script>
-<script src="src/scenes/echoes/h_screens.js"></script>
-<script src="src/scenes/echoes/i_ray.js"></script>
-<script src="src/scenes/echoes/k_lake.js"></script>
-<script src="src/scenes/echoes/m_wind.js"></script>
-<script src="src/scenes/echoes/n_shatter.js"></script>
-<script src="src/scenes/echoes/o_sync.js"></script>
-<script src="src/scenes/echoes/p_dawn.js"></script>
-<script src="src/scenes/echoes/q_shore.js"></script>
+<script src="src/scenes/jazz/lyrics.js"></script>
+<script src="src/scenes/jazz/solo_pitch.js"></script>
+<script src="src/scenes/jazz/common.js"></script>
+<script src="src/scenes/jazz/props.js"></script>
+<script src="src/scenes/jazz/shapes.js"></script>
+<script src="src/scenes/jazz/cast.js"></script>
+<script src="src/scenes/jazz/sheets.js"></script>
+<script src="src/scenes/jazz/a_intro.js"></script>
+<script src="src/scenes/jazz/b_verse1.js"></script>
+<script src="src/scenes/jazz/d_chorus1.js"></script>
+<script src="src/scenes/jazz/e_solo.js"></script>
+<script src="src/scenes/jazz/f_verse2.js"></script>
+<script src="src/scenes/jazz/h_final.js"></script>
 <script>
   // Open studio.html?loop=emotions (or views) to scrub a standalone loop instead of the video.
   const q = new URLSearchParams(location.search).get('loop'); if (q && LOOPS[q]) window.LOOP = LOOPS[q];

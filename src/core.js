@@ -15,7 +15,29 @@ const ease = x => { x = clamp(x); return x * x * (3 - 2 * x); };
 const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
 const backOut = x => { x = clamp(x); const s = 1.9; return 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2); };
 const hash = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-const bpOf = t => (t - OFF) / BEAT;
+// Beat position: beats since the first downbeat. With a beat map (PROJECT.beats: every beat's time, from
+// tools/audio/beats.py; PROJECT.downbeat: the index of the first bar line), it follows the song's real, drifting beats
+// by interpolating between them, and extrapolates past both ends. Without one, it's the constant grid bpm + offset.
+const BEATS = PROJECT.beats || null, DOWN = PROJECT.downbeat || 0;
+function bpOf(t) {
+  if (!BEATS) return (t - OFF) / BEAT;
+  const B = BEATS, n = B.length;
+  if (t <= B[0]) return -DOWN + (t - B[0]) / (B[1] - B[0]);
+  if (t >= B[n - 1]) return n - 1 - DOWN + (t - B[n - 1]) / (B[n - 1] - B[n - 2]);
+  let lo = 0, hi = n - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (B[m] <= t) lo = m; else hi = m; }
+  return lo - DOWN + (t - B[lo]) / (B[lo + 1] - B[lo]);
+}
+// The inverse: the time of beat position b (fractions allowed), and of bar k's first beat (4/4). Use them to put
+// shot starts, cuts and hits on the music: shots([[barT(8), verse], ...]).
+function beatT(b) {
+  if (!BEATS) return OFF + b * BEAT;
+  const B = BEATS, n = B.length, i = Math.floor(b) + DOWN;
+  if (i < 0) return B[0] + (b + DOWN) * (B[1] - B[0]);
+  if (i >= n - 1) return B[n - 1] + (b + DOWN - (n - 1)) * (B[n - 1] - B[n - 2]);
+  return B[i] + (b - Math.floor(b)) * (B[i + 1] - B[i]);
+}
+const barT = k => beatT(4 * k);
 // Seeded by the boil frame, so linework "boils" at BOIL fps like hand-drawn animation.
 const jit = a => (random() * 2 - 1) * a;
 // Each boil drawing holds for several frames, so whatever isn't moving must draw the same until the next one. But a moving
@@ -281,8 +303,20 @@ async function setup() {
   window.ready = true;
   if (!location.search.includes('render')) devUI();
 }
+// p5.brush sets up its stroke machinery the first time a stroke is drawn in the page, and that throws away the washes
+// already painted in that frame (the first frame with an outline loses its background). Warm it up once, off-screen,
+// with every brush, before the first real frame.
+let WARM = false, warmed = false;
+function warmBrushes() {
+  push(); translate(-W / 2, -H / 2);
+  for (const b of ['ink', 'inkfine', 'dry', 'HB', '2B', 'charcoal', 'marker', 'pen', 'cpencil', 'rotring', 'spray']) { brush.set(b, '#000000', 1); brush.line(-300, -300, -280, -290); }
+  paint(rectPts(-400, -400, 30, 30), { wash: '#000000', fill: '#000000', hatch: { d: 5, a: 1 }, ink: '#000000' });
+  flushBrush(); pop();
+}
+async function ensureWarm() { if (warmed) return; warmed = true; WARM = true; await redraw(); WARM = false; }
 function draw() {
   if (!window.ready) return;
+  if (WARM) { warmBrushes(); return; }
   LETTERS = []; CAM = LAST_CAM = null;
   push(); translate(-W / 2, -H / 2);
   BOILN = Math.floor(T * BOIL); CLAWD_N = 0; boilSeed('frame'); noiseSeed(77);
@@ -298,12 +332,13 @@ function composite(t) {
   c.globalCompositeOperation = 'multiply'; c.drawImage(grainC, 0, 0);
   c.globalCompositeOperation = 'source-over';
 }
-window.renderAt = async (t, type = 'image/png', q = .92) => { T = t; await redraw(); composite(t); return outC.toDataURL(type, q); };
+window.renderAt = async (t, type = 'image/png', q = .92) => { await ensureWarm(); T = t; await redraw(); composite(t); return outC.toDataURL(type, q); };
 // Contact sheet of several times, for visual checks: returns { url, ms[] }. crop = [x, y, w, h] fills each cell with just
 // that region of the frame, at full resolution (for checking faces, hands and contacts up close). at = [x, y, w, h]
 // instead crops w × h around the WORLD point (x, y), wherever each frame's camera put it (a foot, a splash, a prop on
 // a moving shot); x and y may be expressions evaluated in the page.
 window.renderSheet = async (times, cols = 3, w = 640, crop = null, at = null) => {
+  await ensureWarm();
   if (at) at = at.map((v) => typeof v === 'string' ? (0, eval)(v) : v);
   const [, , cw, ch] = at || crop || [0, 0, W, H], h = Math.round(w * ch / cw), rows = Math.ceil(times.length / cols), sc = document.createElement('canvas');
   sc.width = cols * w; sc.height = rows * h; const c = sc.getContext('2d'), ms = [];
