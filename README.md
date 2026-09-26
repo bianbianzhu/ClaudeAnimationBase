@@ -14,7 +14,7 @@ The model storyboards first, builds shot by shot, renders contact sheets to chec
 
 ## Run it yourself
 
-You need Node.js, Google Chrome and ffmpeg.
+You need Node.js, Google Chrome and ffmpeg. [docs/SETUP.md](docs/SETUP.md) lists every dependency (including the optional Python tools), where each is installed and how its version is kept.
 
 Without a dedicated GPU, p5.brush's watercolour fills make render times fairly slow, measured in seconds per frame. If you're running on integrated graphics, I recommend asking the model to avoid those fills and replace them with something else appropriate. (I love the look of the watercolours, though.)
 
