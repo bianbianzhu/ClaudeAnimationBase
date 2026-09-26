@@ -60,11 +60,16 @@ function tintCols(o) {
 //   face:   eyes (a name, or [left, right] for mismatched eyes), mouth, lookX / lookY (-1..1), squint 0..1, blush 0..1,
 //           gloom 0..1 (dark forehead with gloom lines), lid 0..1 (lunchbox mouth, front view only), seed (blink timing)
 //   colour: col / dk / lt, or tint + tintK
-//   extras: hat, emote + emoteK (0..1 pop) + emoteAge (s since it appeared), draw(u, sw), armL(u, sw), armR(u, sw)
+//   extras: hat (a name, or a list to wear several: ['gardenia', 'bowtie']), emote + emoteK (0..1 pop) + emoteAge (s since
+//           it appeared), draw(u, sw), armL(u, sw), armR(u, sw), noFace (no eyes or mouth)
+//   sil:    a colour: draws the whole character, hats and everything its hooks hold (instruments, props) as one flat
+//           silhouette of that colour, with no face, emote or shadow. silInk: an outline colour for it (default: none)
 //   boil:   boilKey (a stable id for its boil seeds; defaults to call order, so set it if characters come and go mid-shot)
 function clawd(x, y, u, o = {}) {
+  if (o.sil && !o._sil) return silhouette(o.sil, () => clawd(x, y, u, { noShadow: true, ...o, _sil: true, noFace: true, emote: null }), o.silInk || o.sil);
   // each part boils from its own seed (see boilSeed), so a moving arm never re-boils the body, or the next character
   const id = o.boilKey ?? ++CLAWD_N, rs = part => boilSeed(`clawd ${id} ${part}`);
+  const hats = [].concat(o.hat || []);
   x += (o.dx || 0) * u;
   const V = VIEWS[o.view] || VIEWS.front;
   const dy = (o.dy || 0) * u, sq = (o.sq || 0) + (o.take || 0), sm = clamp(o.smear || 0);
@@ -111,7 +116,8 @@ function clawd(x, y, u, o = {}) {
         sx = Math.sin(ph) * .55; h = 2.2 - Math.max(0, Math.cos(ph)) * .8;
       } else { const ph = Math.sin((o.walk + (i % 2 ? .5 : 0)) * TAU); if (ph > 0) h = 2.2 - ph * .9; }
     }
-    paint(rectPts((lx + sx) * u, -2.4 * u, u, h * u, J * .6), { wash: isFar ? far : dk, washOp: 255, ink: PAL.ink, sw: sw * .8 });
+    const trousers = hats.includes('tux');
+    paint(rectPts((lx + sx) * u, -2.4 * u, u, h * u, J * .6), { wash: trousers ? (isFar ? TUX_FAR : TUX) : isFar ? far : dk, washOp: 255, ink: PAL.ink, sw: sw * .8 });
   });
 
   rs('body');
@@ -128,18 +134,19 @@ function clawd(x, y, u, o = {}) {
       inkLine([[V.seam * u + jit(J), -7.9 * u], [V.seam * u + jit(J), -5 * u], [V.seam * u + jit(J), -2.1 * u]], sw * .55, PAL.ink, 'inkfine', 0);
     }
     paint(body, { ink: PAL.ink, sw });
+    if (hats.includes('tux')) tuxJacket(u, sw, V, J);
     if (o.gloom > .02) gloom(u, sw, V, o.gloom);
-    if (V.face) {
+    if (V.face && !o.noFace) {
       const F = V.face;
       push(); translate(F.cx * u, 0); scale(F.fw, 1);
       if (o.blush) blush(u, sw, F, o.blush === true ? 1 : o.blush);
-      if (o.hat === 'mask' && F.sides.length > 1) paint([[-5.5 * u, -7.7 * u], [5.5 * u, -7.7 * u], [4.4 * u, -4.7 * u], [.6 * u, -5.4 * u], [-.6 * u, -5.4 * u], [-4.4 * u, -4.7 * u]], { wash: PAL.violet, ink: PAL.ink, sw: sw * .7 });
+      if (hats.includes('mask') && F.sides.length > 1) paint([[-5.5 * u, -7.7 * u], [5.5 * u, -7.7 * u], [4.4 * u, -4.7 * u], [.6 * u, -5.4 * u], [-.6 * u, -5.4 * u], [-4.4 * u, -4.7 * u]], { wash: PAL.violet, ink: PAL.ink, sw: sw * .7 });
       rs('eyes'); eyes(u, o, sw, F.sides, sm); rs('mouth');
       push(); translate(F.mx * u, 0); mouth(u, o.mouth, sw); pop();
-      if (['cat', 'masq', 'bowtie'].includes(o.hat)) faceHat(u, o.hat, sw, F.sides);
+      for (const h of hats) if (FACE_HATS.includes(h)) faceHat(u, h, sw, F.sides);
       pop();
     }
-    rs('hat'); push(); translate(V.hat * u, 0); scale(V.hw, 1); hat(u, o.hat, sw); pop();
+    rs('hat'); push(); translate(V.hat * u, 0); scale(V.hw, 1); for (const h of hats) hat(u, h, sw); pop();
   }
   V.arms.filter(a => a[3] === 1).forEach(arm);
   rs('draw'); if (o.draw) o.draw(u, sw);
@@ -180,7 +187,7 @@ function lunchbox(u, o, sw, J, lid, col, dk, lt) {
   paint(rectPts(-5 * u, -8 * u, 10 * u, 2.9 * u, J), { ink: PAL.ink, sw });
   if (o.gloom > .02) gloom(u, sw, VIEWS.front, o.gloom);
   eyes(u, o, sw, [-1, 1], 0);
-  hat(u, o.hat, sw);
+  for (const h of [].concat(o.hat || [])) hat(u, h, sw);
   pop();
 }
 
@@ -192,6 +199,19 @@ function smearTrail(x, y, u, V, k, dir, col) {
     inkLine([[x0, yy], [x0 + s * len * .5, yy + jit(u * .1)], [x0 + s * len, yy]], 2.2 * k, col, 'dry', .3);
     if (i % 2) inkLine([[x0 + s * len * .3, yy + .5 * u], [x0 + s * len * 1.1, yy + .5 * u]], .6, PAL.ink, 'inkfine', 0);
   }
+}
+
+// A dinner jacket (the 'tux' costume piece): an ink jacket over the lower body with a cream shirt front under the bow
+// tie (in the views that show the face), and ink trousers on the legs (see the legs above). It follows every view.
+const TUX = '#2B2531', TUX_FAR = '#221E27';
+function tuxJacket(u, sw, V, J) {
+  const L = V.L * u, R = V.R * u, top = -3.75 * u;
+  paint(rectPts(L, top, R - L, 1.75 * u, J * .5), { wash: TUX, ink: PAL.ink, sw });
+  if (V.strip) paint(rectPts(V.strip[0] * u, top, (V.strip[1] - V.strip[0]) * u, 1.75 * u, J * .4), { wash: TUX_FAR, ink: null });
+  if (!V.face) return;
+  const cx = V.face.cx * u, w = 1.2 * u * V.face.fw;
+  paint([[cx - w, top], [cx + w, top], [cx, -2.05 * u]], { wash: PAL.cream, ink: PAL.ink, sw: sw * .6 });
+  for (const s of [-1, 1]) inkLine([[cx + s * w, top], [cx + s * .3 * w, -2.35 * u]], sw * .5, '#4A4252', 'inkfine', 0);
 }
 
 // Gloom: a dark wash over the forehead with hanging gloom lines (despair, dread, a guilty conscience).
@@ -357,13 +377,56 @@ function mouth(u, m, sw) {
   }
 }
 
+// ---------- silhouettes ----------
+// silhouette(col, fn): everything fn paints comes out as one flat colour (wash and outline), and glows are skipped. It
+// swaps paint / inkLine / glow while fn runs, so it also flattens whatever a character's hooks draw (a held
+// instrument), without that code knowing. clawd()'s `sil` option uses it.
+function silhouette(col, fn, ink = col) {
+  if (!col) return fn();
+  const P = paint, L = inkLine, G = glow;
+  // with a separate ink colour, only the outermost outlines should show: fills stay flat, lines inside are skipped
+  paint = (pts, o = {}) => P(pts, { wash: o.wash || o.fill || o.hatch ? col : undefined, washOp: 255, ink: o.ink === null ? null : ink, sw: o.sw, curv: o.curv });
+  inkLine = (pts, sw, c, br, cv) => L(pts, sw, col, br, cv);
+  glow = () => {};
+  try { return fn(); } finally { paint = P; inkLine = L; glow = G; }
+}
+
 // ---------- hats ----------
-// party, hard, crown, halo, wizard, hood, top, fedora, band, sweatband, beanie, bow, flower, headphones, straw, goggles, cat (ears; the
-// whiskers show in the front and 3/4 views), plus face pieces for the front and 3/4 views: masq, mask, bowtie
+// party, hard, crown, halo, wizard, hood, top, tophat (tilted, vermilion band), fedora, porkpie, beret, cap (newsboy), band, sweatband, beanie, bow,
+// flower, gardenia (a big flower by the left eye), headphones, straw, goggles, cat (ears; the whiskers show in the front
+// and 3/4 views), plus face pieces for the front and 3/4 views: masq, mask, bowtie, specs (round spectacles), and one
+// body piece for every view: tux (a dinner jacket and trousers)
+const FACE_HATS = ['cat', 'masq', 'bowtie', 'specs'];
 function hat(u, h, sw) {
-  if (!h || h === 'mask' || h === 'masq' || h === 'bowtie') return;
+  if (!h || h === 'mask' || h === 'masq' || h === 'bowtie' || h === 'specs' || h === 'tux') return;
   const P = pts => pts.map(([a, b]) => [a * u, b * u]);
-  if (h === 'party') {
+  if (h === 'tophat') {   // a showman's top hat: ink crown with an outline, a vermilion band, a rim of light on its edge
+    push(); translate(.3 * u, 0); rotate(.06);
+    paint(P([[-2.5, -8.5], [-2.3, -13.2], [2.3, -13.2], [2.5, -8.5]]), { wash: '#2B2531', ink: PAL.ink, sw: sw * .8 });
+    paint(rectPts(-2.45 * u, -9.7 * u, 4.9 * u, .85 * u), { wash: '#D6452B', ink: null });
+    inkLine(P([[-2.0, -12.8], [-2.15, -10.0]]), sw * .6, '#6E6478', 'inkfine', 0);
+    paint(ellPts(0, -8.45 * u, 3.9 * u, .55 * u, 22), { wash: '#2B2531', ink: PAL.ink, sw: sw * .8 });
+    pop();
+  } else if (h === 'porkpie') {   // a jazzman's pork-pie: low flat crown with a dented top, a mustard band, a short brim
+    paint(P([[-2.9, -8.3], [-2.65, -10.2], [-1.4, -10.2], [0, -9.95], [1.4, -10.2], [2.65, -10.2], [2.9, -8.3]]), { wash: '#2C2733', ink: PAL.ink, sw: sw * .8 });
+    paint(rectPts(-2.85 * u, -9.25 * u, 5.7 * u, .75 * u), { wash: '#E2A62A', ink: null });
+    paint(ellPts(0, -8.25 * u, 4.1 * u, .55 * u, 22), { wash: '#2C2733', ink: PAL.ink, sw: sw * .8 });
+  } else if (h === 'beret') {   // a soft beret slouched to the right, with the little stalk on top
+    push(); translate(.9 * u, -8.5 * u); rotate(.14);
+    paint(ellPts(0, 0, 4.6 * u, 1.35 * u, 24), { wash: '#C8392B', fill: '#8E2418', fillOp: 70, tex: .6, ink: PAL.ink, sw: sw * .8 });
+    inkLine([[-.1 * u, -1.25 * u], [.1 * u, -1.9 * u]], sw * 1.2, PAL.ink, 'ink', 0);
+    pop();
+  } else if (h === 'cap') {   // a flat newsboy cap: the crown slopes down to the front (+x), the peak juts forward
+    paint(P([[-4.7, -8.0], [-4.3, -9.4], [-2.2, -10.2], [1.2, -10.0], [3.6, -9.2], [4.9, -8.4], [4.9, -8.0]]), { wash: '#5B6475', fill: '#3B4252', fillOp: 60, tex: .8, hatch: { d: u * .9, a: .8, b: 'HB', c: '#3B4252', w: .5 }, ink: PAL.ink, sw: sw * .8, curv: .4 });
+    paint(P([[3.4, -8.55], [6.3, -8.2], [6.1, -7.8], [3.4, -7.95]]), { wash: '#3B4252', ink: PAL.ink, sw: sw * .7, curv: .3 });
+    paint(ellPts(-1.2 * u, -10.05 * u, .5 * u, .32 * u, 10), { wash: '#3B4252', ink: PAL.ink, sw: sw * .5 });
+  } else if (h === 'gardenia') {   // a big cream gardenia worn by the left eye, with two dark leaves
+    const fx = -3.9 * u, fy = -8.1 * u;
+    for (const s of [-1, 1]) paint(P([[-3.9, -8.1], [-3.9 + s * 1.9, -8.9 + s * .2], [-3.9 + s * 1.3, -7.5]]), { wash: '#4E6B4A', ink: PAL.ink, sw: sw * .5, curv: .5 });
+    for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + .4; paint(ellPts(fx + Math.cos(a) * .95 * u, fy + Math.sin(a) * .8 * u, .85 * u, .72 * u, 12, 0, a), { wash: '#F4EAD2', fill: '#E3D3AE', fillOp: 70, ink: PAL.ink, sw: sw * .45 }); }
+    for (let i = 0; i < 4; i++) { const a = i / 4 * TAU + 1.1; paint(ellPts(fx + Math.cos(a) * .4 * u, fy + Math.sin(a) * .35 * u, .5 * u, .42 * u, 10, 0, a), { wash: '#FBF4E2', ink: PAL.ink, sw: sw * .35 }); }
+    paint(ellPts(fx, fy, .28 * u, .28 * u, 8), { wash: '#E9C65A', ink: null });
+  } else if (h === 'party') {
     paint(P([[-1.8, -7.9], [0, -12.8], [1.8, -7.9]]), { wash: PAL.rose, fill: PAL.violet, fillOp: 50, ink: PAL.ink, sw: sw * .8 });
     paint(ellPts(0, -12.8 * u, u * .75, u * .75, 12), { wash: PAL.ochre, ink: PAL.ink, sw: sw * .6 });
   } else if (h === 'hard') {
@@ -435,6 +498,13 @@ function faceHat(u, h, sw, sides) {
     for (const ex of [-2.5, 2.5]) paint(ellPts(ex * u, -6.4 * u, 1.1 * u, .6 * u, 12), { wash: PAL.ink, ink: null });
   } else if (h === 'bowtie') {
     for (const s of [-1, 1]) paint([[0, -2.9 * u], [s * 1.5 * u, -3.6 * u], [s * 1.5 * u, -2.1 * u]], { wash: PAL.rose, ink: PAL.ink, sw: sw * .5 });
+  } else if (h === 'specs') {   // round wire spectacles over the eyes
+    for (const s of sides) {
+      paint(ellPts(s * 2.5 * u, -6 * u, 1.45 * u, 1.45 * u, 22), { wash: '#F6EEDC', washOp: 70, ink: PAL.ink, sw: sw * .9 });
+      inkLine([[s * 2.5 * u - .8 * u, -6.7 * u], [s * 2.5 * u - .3 * u, -7.05 * u]], sw * .5, PAL.cream, 'inkfine', 0);
+    }
+    if (sides.length > 1) inkLine([[-1.05 * u, -6.1 * u], [0, -6.45 * u], [1.05 * u, -6.1 * u]], sw * .7, PAL.ink, 'inkfine', .5);
+    for (const s of sides) inkLine([[s * 3.95 * u, -6.2 * u], [s * 5 * u, -6.4 * u]], sw * .7, PAL.ink, 'inkfine', 0);
   }
 }
 

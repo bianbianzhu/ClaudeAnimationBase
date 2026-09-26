@@ -197,6 +197,13 @@ Open each image and actually look at it. Check:
 - **Rules:** is there any text? Is there any 3D? Is there any dead stretch where nothing is happening?
 - **Colour:** any muddy glows (use `glow()`), pure black or pure white?
 
+**Changing one thing late** (a costume, a prop) without disturbing the rest: define it in one place (e.g. the jazz
+video's `SINGER_LOOK` in cast.js) so every shot takes it from there; render the video before and after into two
+folders (`node render.mjs --frames --dir=out/frames_b`), then run `python tools/frames_diff.py out/frames out/frames_b
+--sheet out/check/diff.jpg`. Renders repeat to within GPU rounding, so it lists exactly the frames that changed and
+boxes the changed pixels. Every box should sit on the thing you changed; `--expect-same` proves a refactor changed
+nothing.
+
 Fix what you find, then look again. **Budget:** at least one sheet per shot, a strip for every key motion and transition, and a crop for every face that carries the story. Contact sheets run about 0.1–1 s per frame, so this is cheap: don't skip it.
 
 ### 4. Render
@@ -274,6 +281,9 @@ node render.mjs --encode --out=out/video.mp4                    # … then encod
   - p5 `push()/pop()/translate()/rotate()/scale()` work with all brush calls.
   - Cost is the number of `fill` shapes and strokes: hundreds are fine, thousands are not. Aim for ≤ 1.5 s per frame. The render log prints ms/frame.
   - Some scenes make p5.brush log five `WebGL: INVALID_OPERATION ... not from the associated program` warnings once per page. They're harmless (frames come out identical). Any other page error is real.
+  - The first stroke drawn in a page sets up p5.brush's stroke machinery and throws away the washes already painted in
+    that frame (its background vanishes). core.js warms every brush up off-screen before the first frame
+    (`warmBrushes()`); if you add a new brush, add it to that list.
 
 ### Time and motion (all pure functions of t)
 
@@ -282,7 +292,7 @@ node render.mjs --encode --out=out/video.mp4                    # … then encod
   - `kf(t, [[t0, v0], [t1, v1], ...], ease)`: keyframes; values may be arrays
   - `lerp`, `clamp`, `frac`, `wob(t, freq, phase)`, `TAU`
 - **Easing:** `ease`, `easeIn`, `easeOut`, `backOut` (overshoot) and `elasticOut`.
-- **Rhythm:** `BEAT` (seconds per beat), `bpOf(t)` (beat position), `beatN(t)` (beat number), and `pulse(t, k)` / `pulse2(t, k)`, which are 1 on each beat (or eighth) and then decay.
+- **Rhythm:** `BEAT` (seconds per beat), `bpOf(t)` (beat position), `beatN(t)` (beat number), `beatT(b)` (the time of beat position b), `barT(k)` (the time of bar k's first beat), and `pulse(t, k)` / `pulse2(t, k)`, which are 1 on each beat (or eighth) and then decay. When `PROJECT.beats` (a beat map) is loaded, `bpOf` follows it instead of the constant grid, and so do the others.
 - **Acting:**
   - `jump(t, t0, t1, h)`: crouch, stretch, arc and squash-land. Returns `{dy, sq}`.
   - `take(t, t0, amt)`: a surprise take, returns `{sq, dy}`.
@@ -329,9 +339,10 @@ clawd(x, y, u, options)   // (x, y) = ground point between the feet; u = size un
 |---|---|
 | pose | `dx`, `dy` (in u; −dy = up), `sq` (squash; negative stretches), `rot` (pivots at the feet), `flip`, `sx`, `sy`, `aL`, `aR` (arm angle: 0 = straight out, + = up, − = down; ±1.5 is vertical), `walk` (leg phase), `noLegs`, `noShadow` |
 | view | `view`: front, q, side, qback, back. `smear` 0..1 + `smearDir` ±1 (0 = both sides) for fast moves |
-| face | `eyes`, `mouth`, `lookX`/`lookY` (−1..1), `squint` 0..1, `blush` 0..1, `gloom` 0..1, `lid` 0..1, `seed` (blink timing) |
+| face | `eyes`, `mouth`, `lookX`/`lookY` (−1..1), `squint` 0..1, `blush` 0..1, `gloom` 0..1, `lid` 0..1, `seed` (blink timing), `noFace` (no eyes or mouth) |
 | colour | `tint` (pale, flush, blue, rosy, green, gold, or any hex) + `tintK`, or `col`/`dk`/`lt` directly |
-| extras | `hat`, `emote` + `emoteK` (0..1 pop) + `emoteAge`, `draw(u, sw)`, `armL(u, sw)`, `armR(u, sw)` |
+| extras | `hat` (one name, or a list to wear several: `['gardenia', 'bowtie']`), `emote` + `emoteK` (0..1 pop) + `emoteAge`, `draw(u, sw)`, `armL(u, sw)`, `armR(u, sw)` |
+| silhouette | `sil`: a colour. The whole character, its hats and whatever its hooks draw (a held instrument) come out as one flat silhouette, with no face, emote or shadow. `silhouette(col, fn)` does the same for any drawing. |
 | boil | `boilKey`: a stable id for its boil seeds (default: call order) |
 
 Options compose by spreading: `clawd(x, y, u, { ...feel('happy', t), ...turn(t, 1, 1.15, 0, .25), hat: 'party' })`. Later spreads win, so put the emotion first and the pose after it. If both an emotion and a pose move the same field (`dy`, `sq`), add them together rather than letting one silently replace the other.
@@ -383,7 +394,7 @@ clawd(x, y, u, emotions(t, [[0, 'sleepy'], [1.9, 'surprised', { lookX: .8 }], [2
   - `lookX`/`lookY` aim the pupils, and `squint` closes the eyes from any shape.
 - **Mouths:** o, O, smile, grin, flat, wobble, cat, frown, smirk, laugh, open, wail, teeth, tongue, pout, yawn. Use `null` for none (Clawd's resting face).
 - **Lunchbox lid:** `lid` 0..1 hinges the top of the body open, with teeth pointing into the mouth. It's for fury, chomping and shouting, in the front view only.
-- **Hats:** party, hard, crown, halo, wizard, hood, top, fedora, band, sweatband, beanie, bow, flower, headphones, straw (sun hat), goggles (swim goggles on the forehead), cat (ears and whiskers). Face pieces: masq, mask, bowtie.
+- **Hats:** party, hard, crown, halo, wizard, hood, top, tophat (tilted, with a vermilion band), fedora, porkpie, beret, cap (a flat newsboy cap, peak forward), band, sweatband, beanie, bow, flower, gardenia (a big flower by the left eye), headphones, straw (sun hat), goggles (swim goggles on the forehead), cat (ears and whiskers). Face pieces: masq, mask, bowtie, specs (round spectacles). Body piece: tux (a dinner jacket with a shirt front, and trousers), in every view.
 - **Emotes** are painted marks that pop in by the head: `!` `?` `!!` `!?` zzz, sweat, spark, heart, hearts, anger, steam, bulb, dots, scribble, music, swirl, stars, cloud.
   - `emoteK` is the 0..1 pop and `emoteAge` drives the looping ones; `emotions()` sets both.
   - `emote(kind, x, y, s, k, age)` draws one anywhere, for example over a prop.
@@ -419,6 +430,7 @@ The kit doesn't need music, but it's built for it:
 2. Put the audio in `assets/` and set `PROJECT.audio` (or pass `--audio=`). `--clip` and `--encode` mux it in.
 3. Land hits, cuts and takes on beats (`beatN`, `pulse`). Cut on bar lines for big changes, and give each musical phrase its own visual.
 4. **Lyrics are not text.** Don't put words on screen. Act the meaning of a line instead.
+5. **Measure the song, don't guess it.** [docs/MUSIC_SYNC.md](docs/MUSIC_SYNC.md) shows how to measure the tempo and beat map and how to time the lyrics. If the song drifts (generated songs often do), a beat map, `PROJECT.beats`, replaces the constant bpm grid, and `barT(k)` gives each bar line's time. If the person asks for lyric subtitles, ffmpeg burns them into a copy of the rendered video. They are never painted in the frame, which stays text-free.
 
 ## Common failures
 

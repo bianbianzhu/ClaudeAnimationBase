@@ -35,8 +35,8 @@
     row.forEach(([name, f], i) => { const x = 180 + i * 312; f(x); label(name, x, y2 + 38); });
     floor(y2);
     // row 3: hats
-    const hats = ['party', 'hard', 'crown', 'halo', 'wizard', 'top', 'fedora', 'band', 'beanie', 'bow', 'flower', 'headphones', 'cat', 'masq', 'bowtie'];
-    hats.forEach((h, i) => { const x = 82 + i * 125.5; clawd(x, 985, 8, { ...feel('neutral', t, { seed: i }), hat: h }); label(h, x, 1015, 17); });
+    const hats = ['party', 'hard', 'crown', 'halo', 'wizard', 'top', 'fedora', 'porkpie', 'beret', 'cap', 'band', 'beanie', 'bow', 'flower', 'gardenia', 'headphones', 'cat', 'masq', 'bowtie', 'specs'];
+    hats.forEach((h, i) => { const x = 60 + i * 94.7; clawd(x, 985, 8, { ...feel('neutral', t, { seed: i }), hat: h }); label(h, x, 1015, 17); });
     floor(985);
   };
   LOOPS.views.len = 4;
