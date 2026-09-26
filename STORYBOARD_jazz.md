@@ -310,3 +310,82 @@ singer's face are left. The singer blows it out. Black. (Loop: frame 0 is black,
 - Transitions at every seam: listed per shot.
 - Text: none in the frame (subtitles are burned in afterwards, as the user asked).
 - The ending rhymes with the opening: the match / candle, and the cover from B is rebuilt in T.
+
+---
+
+## As built
+
+The film as it was finally made, which differs from the plan above where review showed something read better. Times
+are the shot starts registered in the scene files (resolved from the beat map); the one-line notes are what each shot
+actually does. Section files: `a_intro.js` (A–D), `b_verse1.js` (E–M), `d_chorus1.js` (N), `e_solo.js` (O),
+`f_verse2.js` (P–Q), `h_final.js` (R–U).
+
+### Changes from the plan, overall
+- **Hard cuts moved onto snare backbeats.** Most shot boundaries after D sit on beat 2 or 4 of a bar rather than on
+  the bar line (the plan's rule for hard cuts), so many starts below are a beat or two off the planned bar times.
+- **The singer's costume.** A tilted top hat and a dinner jacket were added (see Cast) because viewers mixed the singer
+  up with the one who left in wide shots.
+- **The one who left** is a faceless cream figure with an ink outline (`lover()`), not a rose silhouette: a rose fill
+  read as an animal.
+- **Scale.** The first pass of most sections put characters too small in big fields; every section was revised to
+  medium (u ≈ 24–36) or close-ups (u 45+) for the reads that matter.
+
+### Shots
+
+| shot | start–end (s) | what happens |
+|---|---|---|
+| A | 0.00–0.62 | Pure black; the match strikes on the drum pickup (0.21) along the box's strip, catches (0.34), lights a huge brass bell with the flame reflected in it; it gutters (the breath in). The box stays hidden until the strike so frame 0 is black (the loop). |
+| B1 | 0.62–4.13 | The first chord: one pale flash frame, the whole frame as wedges of colour, which fly apart from the flame's point; the cover builds beat by beat (disc, blue band, vermilion wedge, ink bars dropping in, the singer's ink silhouette at the mic). |
+| B2 | 4.13–5.86 | Match cut: the disc flattens into the ride cymbal; a wire brush (its handle running off frame) sweeps it with smear frames and shimmer. |
+| C | 5.86–9.29 | The saxophonist in a hard spotlight: a visible breath in (stretch, lean back), the first note at 6.36 unfurls the orange ribbon across the frame, the camera follows its tip; the ribbon's orange becomes a brush wipe. |
+| D | 9.29–11.90 | The pianist in pure profile silhouette (beanie, lit spectacles) against a mustard window, the grand piano in ink; tiles hop over the keys on the beats; a whip pan right. |
+| E | 11.90–19.57 | Catches the whip on the singer (medium, u ≈ 36 on screen); eyes open on the held "my… love", the free arm reaches; it looks right and the camera follows to the empty table (candle, red phone, gardenia, chair), held ~2.5 s. |
+| F | 19.57–21.29 | The bassist's fingers, extreme close-up: four walking notes, four ripples; the last swells into a blue wipe. |
+| G1 | 21.29–24.31 | The phone: the receiver lifts, a nub dials, the camera follows the cord to the window. |
+| G2 | 24.31–28.18 | Match cut cord → telephone wire, running to an empty booth ringing on beats 1–2. |
+| H | 28.18–35.06 | The street closer, five big lamps lighting on the backbeats with shard bursts; the lover walks into the light and turns the corner (32.35) just before the last lamp; a petal drifts onto the empty corner. |
+| I1 | 35.06–38.94 | The drummer's intro in a circular vignette: ride shimmer, the brush lifts, whips down (smear) and hits the snare on 2 and 4; tiles fall into a staircase. |
+| I2 | 38.94–41.96 | The tiles are key-steps; the lover runs down them (u ≈ 19), each key lighting. |
+| J | 41.96–48.42 | The keys lie down one by one into a zebra crossing; a petal; the walk light, nobody crosses; the camera rises. |
+| K | 48.42–56.17 | The clock tower against the moon; the minute hand jumps each beat; the sax ribbon wraps the tower. |
+| L | 56.17–62.64 | The moon match-cuts to the spotlight disc behind the singer; it shrinks on five backbeats, the singer goes blue and gloomy (acted with `emotions()`, a trembling reach at the light); silhouette at bar 35. |
+| M | 62.64–76.46 | The bench (u ≈ 32): the colour switches on bar lines (cream → mustard with a heart → vermilion → blue with an umbrella); at bar 43 dark, a lamp; the love settles, rises, holds a look back (~0.65 s), walks out left; the singer leans after it, sags; an iris to black by 76.38. |
+| N1a | 76.46–79.50 | From black: a sliver of door light; the lover glances back and leaves; the door slams on 78.19; the club snaps to colour and every sound shape bursts out and blows the door open on the backbeat. |
+| N1b | 79.50–81.23 | The flood down the night street; the lover turns into a side street; the ribbon arrives too late and curls round the empty corner. |
+| N2 | 81.23–85.56 | The singer close before the mustard disc: the crash rings it, a cry burst with a whirl of shards and tiles; `determined` at 84.26, looking after the whirl. |
+| N3 | 85.56–90.32 | The subway: the lover in the last window, bass ripples roll the wheels, the ribbon races after the train into a brass bell-rimmed tunnel until the mouth fills the frame. |
+| N4 | 90.32–97.67 | Out of the bell onto a huge ink stage with one cone of light; the band goes dark one by one; a slow push-in (u ≈ 27 → 35); the shapes wheel round the singer on the beat; the reach for the ribbon held on the backbeat, then the sag. |
+| N5 | 97.67–104.14 | The singer turns from the mic, walks upstage, looks back once (eyes, then head, a hold), turns away; the bar-59 piano run drives a tile staircase and a mustard block across the frame: full mustard at 104.14. |
+| O1 | 104.14–105.88 | From mustard, a checkerboard flips across the frame on beats 1–3; the tiles hop away to show the saxophonist breathing in. |
+| O2a | 105.88–109.35 | The ribbon bursts out on the bar line, loops round the frame and scoops the player up; the band shrinks to blue silhouettes; the camera dives into the ribbon. |
+| O2b | 109.35–112.84 | Over the city from straight above; the player rides the melody (higher note → the city shrinks, the shadow falls away); into the bell. |
+| O2c | 112.84–119.81 | Brass rings rush past inside the horn; out over a river district with ripples on the water; the big climb at 117–118; the last note's giant ribbon covers the frame at 119.81. |
+| O3 | 119.81–126.80 | The trumpeter on a rooftop, rays from 11 measured note onsets; a low-angle cutaway (122.86–124.61, cut on backbeats) of the rays raking the skyline and lighting windows; back for the crane up the long note at 124.8. |
+| O4 | 126.80–132.03 | The trade as a split screen (checkerboard over each half); the pianist (u 30) climbs a staircase of piano keys, the stood-on key lit; the moon rises in (~128.5) and grows; the top step on the bar-75 downbeat; the camera rises past to the moon: r 260 at (960, 400) held from 131.6. |
+| P1 | 132.03–136.84 | The moon tips flat into the ride cymbal (two brush sweeps), back into the moon over the blue city; one window per beat lights with the love inside. |
+| P2 | 136.84–140.34 | The singer walks the dark street side-on (u ≈ 38 on screen), each step rippling the wet pavement; a dead lamp stutters on the backbeat; a whip into a black wall. |
+| P3 | 140.34–145.59 | Awake in bed: medium, then a push to the untouched cup as the eyes go to it, then a close-up (u ≈ 60) for two tears; it turns away. |
+| P3b | 145.59–147.78 | The cold cup from above, rippling blue on every bass note. |
+| P4a | 147.78–149.10 | The cup's rim match-cuts to the phone dial; the singer dials. |
+| P4b | 149.10–154.35 | The booth (60% of frame height, the teary face through the glass); three blue rings light windows; the love stops, half-turns, and on "disappear" breaks into tiles; the receiver dangles; a checkerboard wipe. |
+| TABLE | 154.35–167.50 | One continuous setup: the cold table, the candle out; the singer strikes a match on the box (the opening's match, from outside) and relights it; a push-in to the flame, the face turns hopeful; a spark lifts off (the shot is registered twice, at 154.35 and 161.79). |
+| Q2 | 167.50–170.13 | The spark rises past the band (u 20–22); each player lights in its colour with a puff of its sound shape; a pull back to all five lit. |
+| Q3 | 170.13–175.84 | The spark flies into the closing door's light; the singer (a large rim-lit foreground figure, u 44) runs, ducks the ribbon, reaches; the ribbon jams the door; the end frame is the agreed seam (door light x 860–1060, y 180–1000, ribbon wedged, the singer reaching at the left). |
+| R1 | 175.84–182.84 | Opens on Q3's exact last frame; the door bursts, the singer is thrown back, a cream flash; the band pours into the street playing, all shapes at once. |
+| R2 | 182.84–189.85 | The bar-line grid: four panes on bar 105, eight on bar 107, the singer's pane grows over the frame on bar 108. |
+| R3 | 189.85–196.85 | Trading as a diagonal split, singer ↔ sax (the split leans to whoever has the phrase), swapping to drums ↔ trumpet on bar 111. |
+| R4 | 196.85–202.09 | The panes slide apart onto the street; the ribbon lifts the singer and the camera cranes up through the lit city (tile windows, lamps, a viaduct train on ripples, rays past the moon). |
+| R5 | 202.09–205.60 | The break: everything stops in mid-air, the city dims, one ray finds the singer, a slow push-in. |
+| S | 205.60–219.72 | After hours under a work light: chairs up, the band packing; a push-in to the table (u ≈ 40, then ≈ 55); the singer takes the gardenia off and lays it beside the other; a small smile at the empty chair on the last word. |
+| T | 219.72–230.33 | The club blows apart into wedges (echoing B1); the pieces lock into `cover()` on the hits (rays → disc, ripples → band, shards → wedge, tiles → bars, the band as ink silhouettes, u ≈ 18–20, the singer and candle in the centre); the ribbon wraps the disc on the last chord; freeze. |
+| U | 230.33–234.65 | The blocks slide into the flame one after another, the ground darkening to ink; the flame-lit face breathes in and blows; an ember and a smoke thread; pure ink from ~233.3 (frame 0 is black: the loop). |
+
+### Seams between sections (contracts the section builders worked to)
+| at (s) | from → to | the frame at the seam |
+|---|---|---|
+| 11.90 | D → E | a whip pan right with dark speed lines; E starts mid-whip and decelerates onto the singer |
+| 76.46 | M → N | fully ink (JZ.ink) |
+| 104.14 | N → O | fully flat mustard (JZ.mustard) |
+| 132.03 | O → P | a mustard disc (the moon), r 260 at screen (960, 400), on JZ.blueDk |
+| 175.84 | Q → R | the club door: ink wall, a cream bar of light at x 860–1060, y 180–1000, the ribbon wedged in it, the singer reaching at the left |
+| 234.65 | U → A (loop) | fully ink; A's frame 0 is black too |
