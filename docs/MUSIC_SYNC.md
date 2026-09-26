@@ -25,7 +25,7 @@ The tools are Python: [tools/audio/beats.py](../tools/audio/beats.py) (librosa) 
 Use a virtualenv of your choice, **outside the repo**:
 
 ```bash
-python3 -m venv ~/.venvs/audio
+python3.13 -m venv ~/.venvs/audio   # Python 3.13 verified; the pinned numpy/scipy/librosa need 3.12+
 ```
 
 Install the pinned packages (librosa, faster-whisper, and pillow for `tools/frames_diff.py`) **without `-q`**. Where public PyPI is blocked, use the proxy index:
@@ -209,7 +209,7 @@ ffmpeg -hide_banner -filters | grep -E " (ass|subtitles) "
 #  .. subtitles         V->V       Render text subtitles onto input video using the libass library.
 ```
 
-Homebrew's `ffmpeg` (8.0.1 here, `--enable-libass`) has both. If the lines are missing, install an ffmpeg built with libass (`brew install ffmpeg`). On macOS libass finds fonts through CoreText (the log says `Using font provider coretext`).
+Homebrew's `ffmpeg` 8.x was built with libass and has both, but from 9.0 the plain `ffmpeg` formula no longer includes it. If the lines are missing, `brew install ffmpeg-full` and use it by its full path (it's keg-only): `FF=$(brew --prefix ffmpeg-full)/bin/ffmpeg`, then run the commands below with `$FF` in place of `ffmpeg` (see [SETUP.md](SETUP.md)). On macOS libass finds fonts through CoreText (the log says `Using font provider coretext`).
 
 ### Convert the SRT to a styled ASS
 
